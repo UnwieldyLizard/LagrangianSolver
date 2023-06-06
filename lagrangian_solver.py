@@ -15,7 +15,7 @@ class LagrangianSolver():
         self.mkdir_if_not_exist(os.path.dirname(__file__)+"/Output/pickls/")
         self.mkdir_if_not_exist(os.path.dirname(__file__)+"/Output/png_spam/")
     
-    def initialize_sim(self, lagrangian, initial_state, metric, granularity):
+    def initialize_sim(self, initial_state, lagrangian, metric, granularity):
         self.dims = np.array(initial_state).shape[2]
         self.lagrangian = lagrangian
         self.metric = metric

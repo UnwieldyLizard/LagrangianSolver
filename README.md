@@ -9,9 +9,12 @@ Where $L(\vec{r}, i)$ is a function of both position (in spacetime) and particle
 # How to Install
 **The Python Build:**
 Download lagrangian_solver.py in the desired workspace. Note the directory you put this in will determine where it builds output folders and such.
+
 **The C++ Build:**
 
 # How to Use (Basic)
+There is an example program in example.py, it's contents are explained below.
+
 Once you have it installed import the file to your code as you would any other header file. The solver class is simply called LagrangianSolver and it's constructor takes only one parameter, the string which will be the name of the output file.
 ```
 from lagrangian_solver import *
@@ -28,14 +31,14 @@ The simulations this then initialized with the `my_solver.initialize_sim()` meth
 Once this is done use `my_solver.run()` then plot it with `my_solver.plot()`
 
 ```
-from lagrangian_solver import *
+from filepath.to.lagrangian_solver import *
 
-initial_points = [[[0.1  , 0   , 0   , 25]]
-                 ,[[0.6  , 0.04, 0.04, 25]]]
+initial_points = [[[0.1  , 21  , 0   , 0   ]]
+                 ,[[0.6  , 21  , 0.04, 0.04]]]
 granularity = [10000, 1e-6, 1e-6]
 
 my_solver = LagrangianSolver("My_simulation_name")
-my_solver.initialize_sim(initial_points, rel_free_lagrangian, minkowski_metric, granularity)
+my_solver.initialize_sim(initial_points, rel_free_lagrangian, schwarzschild_metric, granularity)
 my_solver.run()
 my_solver.plot()
 ```

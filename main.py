@@ -2,7 +2,7 @@ from lagrangian_solver import *
 
 sol = LagrangianSolver("Kerr_4D")
 #sol = Solver("cool_orbit")
-sol.initialize_postprocess(rel_lagrangian, schwarzschild_metric, [10000,0.001])
+#sol.initialize_postprocess(rel_lagrangian, schwarzschild_metric, [10000,0.001])
 #initial_cond = [[[0.1  , 5   , 0    ], [0.1  , 20  , 0  ]]
 #               ,[[0.6  , 5.05, 0.14 ], [0.6  , 20  , 0.055]]]
 #working schwarzschild_4D
@@ -21,7 +21,7 @@ initial_cond = [[[0.1  , 21  , 0    ,0]]
 #               ,[[0.5 , 5.05, 0.14 ], [0.2 , 20  , 0]]]
 #initial_cond = [[[0.0, 0.0, 0.9, 0]],
 #                [[0.01, 0.003, 0.899, 0]]]
-sol.initialize_sim(rel_free_lagrangian, initial_cond, kerr_metric, [10000,1e-6,1e-6])
+sol.initialize_sim(initial_cond, rel_free_lagrangian, kerr_metric, [10000,1e-6,1e-6])
 sol.run()
 sol.plot(orientation=[30, 220])
 #sol.open_old()
