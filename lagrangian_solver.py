@@ -3,24 +3,34 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 import pickle
 import os
-import shutil
 
-class Solver():
+"""
+The Solver
+"""
+
+class LagrangianSolver():
     def __init__(self, name):
         self.name = name
+        self.mkdir_if_not_exist(os.path.dirname(__file__)+"/Output/")
+        self.mkdir_if_not_exist(os.path.dirname(__file__)+"/Output/pickls/")
+        self.mkdir_if_not_exist(os.path.dirname(__file__)+"/Output/png_spam/")
     
     def initialize_sim(self, lagrangian, initial_state, metric, granularity):
         self.dims = np.array(initial_state).shape[2]
         self.lagrangian = lagrangian
         self.metric = metric
         self.positions = np.array(initial_state)[1, :]
-        [self.step_count, self.variation_step, self.discriminator] = granularity
+        [self.step_count, self.variation_step, self.tolerance] = granularity
         """Note step length is set by distance between initial points"""
         paths_shape = [self.step_count+2]
         for i in range(2): #axis 0 = steps, 1 = subjects, 2 = points
             paths_shape.append(self.positions.shape[i])
         self.paths = np.zeros(paths_shape)
         self.paths[:2] = initial_state
+
+    def mkdir_if_not_exist(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
 
     def initialize_postprocess(self, lagrangian, metric, granularity):
         self.lagrangian = lagrangian
@@ -37,11 +47,6 @@ class Solver():
         self.name = new_name
         with open(os.path.dirname(__file__)+"/Output/pickls/"+self.name+".dat", "wb") as pickle_file:
             pickle.dump({"paths": self.paths}, pickle_file)
-
-
-    def full_sim(self):
-        self.run()
-        self.plot()
 
     def lorentz_dot(self, pos, v1, v2):
         v1dotv2 = 0
@@ -75,7 +80,7 @@ class Solver():
     def check_guess(self, guess):
         incorrect = False
         for d in range(self.dims):
-            if abs(guess[d]) > self.discriminator:
+            if abs(guess[d]) > self.tolerance:
                 incorrect = True
         return incorrect
 
@@ -117,7 +122,7 @@ class Solver():
     def run(self):
         self.log_immediately = False
         for n in range(self.step_count):
-            if n % 10 == 0:
+            if n % (int(self.step_count/10)) == 0:
                 print(n)
             self.take_steps(n+2)
             for s in range(self.positions.shape[0]):
@@ -328,9 +333,9 @@ def smart_newton(func, guess, target=None):
     dif = func(guess) - target
     grad = derivative(func, guess)
     n = 0
-    discriminator = 1e-6
+    tolerance = 1e-6
     i = 0
-    while dif >= discriminator:
+    while dif >= tolerance:
         guess -= (dif/grad)*(0.0001**(i/1000))
         dif = func(guess) - target
         grad = derivative(func, guess)
@@ -340,8 +345,11 @@ def smart_newton(func, guess, target=None):
             break
     return guess
 
+"""
+Lagrangians
+"""
 
-def rel_lagrangian(pos1, pos2, s):
+def rel_free_lagrangian(pos1, pos2, s):
     masses = np.array([4, 5])
     mass = masses[s]
     position = (pos1+pos2)/2
@@ -370,6 +378,10 @@ def class_grav_lagrangian(pos1, pos2, s):
     r = np.sqrt(r)
     lagrangian = 0.5 * mass * velocity_squared + (M*mass)/r
     return lagrangian
+
+"""
+Metrics
+"""
 
 def classical_metric(position):
     dims = len(position)
